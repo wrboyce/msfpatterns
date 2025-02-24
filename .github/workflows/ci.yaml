@@ -1,0 +1,89 @@
+---
+name: 👷 Continuous Integration
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    branches: ["*"]
+  push:
+    branches: ["*"]
+    tags: ["v*"]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+      - uses: pre-commit/action@v3.0.0
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Run tests
+        run: uv run pytest --cov --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      - name: Build package
+        run: uv build
+
+  changelog:
+    if: github.event_name == 'pull_request'
+    needs: [lint]
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+      - name: Install commitizen
+        run: pip install commitizen
+      - name: Generate Changelog Preview
+        id: changelog
+        run: |
+          cz changelog --dry-run > pr_changelog.md
+          echo "CHANGELOG_PREVIEW<<EOF" >> $GITHUB_ENV
+          cat pr_changelog.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+      - name: Post Changelog as PR Comment
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ## 📌 Changelog Preview
+
+            ```markdown
+            ${{ env.CHANGELOG_PREVIEW }}
+            ```
+
+            ⚠️ **Ensure your commits follow Conventional Commits to be included in the release!**
+          comment_tag: changelog-preview
