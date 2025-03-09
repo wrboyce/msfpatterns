@@ -55,6 +55,7 @@ jobs:
       - run: uv lock
       - run: git commit --amend --no-edit uv.lock
       - run: git tag -f v${{ steps.commitizen.outputs.version }}
+      - run: git show v${{ steps.commitizen.outputs.version }}
       - run: git push --follow-tags
 
   build:
