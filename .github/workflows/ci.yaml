@@ -82,7 +82,7 @@ jobs:
           uv run cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags)
       - name: Generate Changelog Preview
         run: |
-          uv run cz changelog --dry-run > pr_changelog.md
+          uv run cz changelog --dry-run --start-rev master > pr_changelog.md
           echo "CHANGELOG_PREVIEW<<EOF" >> $GITHUB_ENV
           cat pr_changelog.md >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -95,7 +95,7 @@ jobs:
             ${{ env.CHANGELOG_PREVIEW }}
             ```
 
-            ⚠️ **Ensure your commits follow Conventional Commits to be included in the release!**
+            ⚠️ **Ensure your commits follow [Gitmoji Conventional Commits](https://github.com/ljnsn/cz-conventional-gitmoji) to be included in the release!**
           comment-tag: changelog-preview
 
   build-prerelease:
