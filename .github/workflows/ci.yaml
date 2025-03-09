@@ -96,7 +96,7 @@ jobs:
             ```
 
             ⚠️ **Ensure your commits follow Conventional Commits to be included in the release!**
-          comment_tag: changelog-preview
+          comment-tag: changelog-preview
 
   build-prerelease:
     runs-on: ubuntu-latest
