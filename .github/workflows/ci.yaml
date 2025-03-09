@@ -79,9 +79,6 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - run: uv venv
       - run: uv pip install commitizen cz-conventional-gitmoji
-      - name: Generate Changelog
-        run: |
-          uv run cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags)
       - name: Generate Changelog Preview
         run: |
           uv run cz changelog --dry-run --start-rev $(git describe --tags --abbrev=0) > pr_changelog.md
@@ -163,11 +160,11 @@ jobs:
       - run: uv venv
       - run: uv pip install commitizen cz-conventional-gitmoji
       - name: Generate Release Notes
-        run: uv run cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags --abbrev=0)
+        run: uv run cz changelog --dry-run --start-rev $(git describe --tags --abbrev=0) > release_changelog.md
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: dist/*
-          body_path: CHANGELOG.md
+          body_path: release_changelog.md
           draft: false
           prerelease: false
