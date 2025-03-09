@@ -159,6 +159,7 @@ jobs:
         with:
           name: "msfpatterns-${{ env.VERSION }}"
           path: dist
+      - run: uv venv
       - run: uv pip install commitizen
       - name: Generate Release Notes
         run: cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags --abbrev=0)
