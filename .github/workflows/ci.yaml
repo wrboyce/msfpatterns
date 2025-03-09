@@ -160,7 +160,7 @@ jobs:
       - run: uv venv
       - run: uv pip install commitizen cz-conventional-gitmoji
       - name: Generate Release Notes
-        run: uv run cz changelog --dry-run --start-rev $(git describe --tags --abbrev=0) > release_changelog.md
+        run: uv run cz changelog --dry-run --start-rev $(git describe --tags --abbrev=0 $(git describe --tags --abbrev=0))^ > release_changelog.md
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
