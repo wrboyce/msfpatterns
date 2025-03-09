@@ -1,11 +1,10 @@
----
 name: 🚀 Continuous Integration & Deployment
 
 on:
   pull_request:
     branches: ["*"]
   push:
-    branches: ["*"]
+    branches: ["master"]
     tags: ["v*"]
 
 permissions:
@@ -14,6 +13,7 @@ permissions:
 
 jobs:
   lint:
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +21,7 @@ jobs:
       - uses: pre-commit/action@v3.0.1
 
   test:
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +61,7 @@ jobs:
       - run: uv build
       - uses: actions/upload-artifact@v4
         with:
-          name: msfpatterns
+          name: "msfpatterns-pr${{ env.PR_NUMBER }}.${{ env.GIT_SHA }}"
           path: dist
 
   pr-changelog:
@@ -68,17 +69,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-pr]
     permissions:
+      contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@v5
-      - run: uv pip install commitizen
+      - run: uv venv
+      - run: uv pip install commitizen cz-conventional-gitmoji
       - name: Generate Changelog
         run: |
-          cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags)
+          uv run cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags)
       - name: Generate Changelog Preview
         run: |
-          cz changelog --dry-run > pr_changelog.md
+          uv run cz changelog --dry-run --start-rev origin/master > pr_changelog.md
           echo "CHANGELOG_PREVIEW<<EOF" >> $GITHUB_ENV
           cat pr_changelog.md >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -91,8 +96,8 @@ jobs:
             ${{ env.CHANGELOG_PREVIEW }}
             ```
 
-            ⚠️ **Ensure your commits follow Conventional Commits to be included in the release!**
-          comment_tag: changelog-preview
+            ⚠️ **Ensure your commits follow [Gitmoji Conventional Commits](https://github.com/ljnsn/cz-conventional-gitmoji) to be included in the release!**
+          comment-tag: changelog-preview
 
   build-prerelease:
     runs-on: ubuntu-latest
@@ -104,7 +109,7 @@ jobs:
       - run: uv build
       - uses: actions/upload-artifact@v4
         with:
-          name: msfpatterns-latest
+          name: "msfpatterns-master.${{ env.GIT_SHA }}"
           path: dist
 
   build-release:
@@ -118,7 +123,7 @@ jobs:
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - uses: actions/upload-artifact@v4
         with:
-          name: "msfpatterns-${{ env.VERSION }}"
+          name: "msfpatterns-${{ env.VERSION }}.${{ env.GIT_SHA }}"
           path: dist
 
   publish:
@@ -143,29 +148,36 @@ jobs:
     runs-on: ubuntu-latest
     needs: publish
     permissions:
-      contents: read
       id-token: write
+      attestations: write
     steps:
-      - uses: actions/checkout@v4
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - uses: actions/download-artifact@v4
         with:
           name: "msfpatterns-${{ env.VERSION }}"
           path: dist
+      - uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "dist/*"
+          push-to-registry: true
+
+  smoke-test:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Install Sigstore
-        run: pip install sigstore
-      - name: Generate Sigstore Attestation
-        run: sigstore sign dist/*
-      - name: Verify Sigstore Attestation
-        run: sigstore verify dist/*
+      - name: Install package from PyPI
+        run: pip install msfpatterns
+      - name: Verify package functionality
+        run: msfpatterns --help
 
   release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    needs: [attest]
+    needs: smoke-test
     steps:
       - uses: actions/checkout@v4
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
