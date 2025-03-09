@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   lint:
-    if: "!(github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, 'bump:'))"
+    if: "!(github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '🔖 bump:'))"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
       - uses: pre-commit/action@v3.0.1
 
   test:
-    if: "!(github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, 'bump:'))"
+    if: "!(github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '🔖 bump:'))"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -170,8 +170,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Install package from PyPI
-        run: pip install msfpatterns
+        run: pip install msfpatterns==${{ env.VERSION }}
       - name: Verify package functionality
         run: msfpatterns --help
 
