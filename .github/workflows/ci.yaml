@@ -163,7 +163,7 @@ jobs:
       - run: uv venv
       - run: uv pip install commitizen
       - name: Generate Release Notes
-        run: cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags --abbrev=0)
+        run: uv run cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags --abbrev=0)
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
