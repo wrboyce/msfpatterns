@@ -52,8 +52,7 @@ jobs:
           github_token: ${{ secrets.GH_PAT }}
           push: false
       - run: uv lock
-      - run: ls -la .git/COMMIT_EDITMSG
-      - run: git commit --amend uv.lock
+      - run: git commit --amend --no-edit uv.lock
       - run: git push --follow-tags
 
   build:
