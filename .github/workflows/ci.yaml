@@ -44,11 +44,15 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
+      - uses: astral-sh/setup-uv@v5
       - uses: commitizen-tools/commitizen-action@master
-        id: commitizen
         with:
           extra_requirements: cz-conventional-gitmoji
           github_token: ${{ secrets.GH_PAT }}
+          push: false
+      - run: uv lock
+      - run: git commit --amend uv.lock
+      - run: git push --follow-tags
 
   build:
     runs-on: ubuntu-latest
