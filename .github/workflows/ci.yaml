@@ -54,8 +54,7 @@ jobs:
           push: false
       - run: uv lock
       - run: git commit --amend --no-edit uv.lock
-      - run: git tag -f ${{ steps.commitizen.outputs.version }}
-      - run: exit 99
+      - run: git tag -f v${{ steps.commitizen.outputs.version }}
       - run: git push --follow-tags
 
   build:
