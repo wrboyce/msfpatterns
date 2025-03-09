@@ -39,14 +39,10 @@ repos:
     hooks:
       - id: uv-lock
 
-  # - repo: local
-  #   hooks:
-  #     - id: uv-lock-check
-  #       name: uv.lock
-  #       entry: uv lock --check
-  #       language: system
-  #       pass_filenames: false
-  #       stages: [pre-commit, pre-push]
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: "v2.5.1"
+    hooks:
+      - id: pyproject-fmt
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.15.0
