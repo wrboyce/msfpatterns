@@ -119,8 +119,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: publish
     permissions:
-      id-token: write
       attestations: write
+      id-token: write
     steps:
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - name: Wait for PyPI package availability

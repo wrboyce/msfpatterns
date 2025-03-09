@@ -10,24 +10,34 @@ repos:
       # sensitive information
       - id: detect-private-key
       # common file problems
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
+      - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable
       - id: check-vcs-permalinks
       - id: check-symlinks
       - id: destroyed-symlinks
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
       # language specific checks
       - id: check-ast
       - id: check-toml
       - id: check-yaml
+      # python specifics
+      - id: check-builtin-literals
+      - id: check-docstring-first
+      - id: debug-statements
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.7
+    rev: v0.9.10
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.6.5
+    hooks:
+      - id: uv-lock
 
   # - repo: local
   #   hooks:
@@ -44,7 +54,7 @@ repos:
       - id: mypy
 
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.2.2
+    rev: v4.4.1
     hooks:
       - id: commitizen
         additional_dependencies: [cz-conventional-gitmoji]
