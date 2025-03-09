@@ -1,6 +1,5 @@
 [build-system]
 build-backend = "hatchling.build"
-
 requires = [ "hatchling" ]
 
 [project]
@@ -24,6 +23,7 @@ urls.Changelog = "https://github.com/wrboyce/msfpatterns/blob/master/CHANGELOG.m
 urls.Homepage = "https://github.com/wrboyce/msfpatterns"
 urls.Issues = "https://github.com/wrboyce/msfpatterns/issues"
 urls.Repository = "https://github.com/wrboyce/msfpatterns.git"
+
 scripts.msfpatterns = "msfpatterns.cli:main"
 
 [dependency-groups]

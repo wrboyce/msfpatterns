@@ -211,7 +211,7 @@ wheels = [
 
 [[package]]
 name = "msfpatterns"
-version = "2.0.17"
+version = "2.0.18"
 source = { editable = "." }
 
 [package.dev-dependencies]
@@ -227,11 +227,11 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "mypy", specifier = ">=1.15.0" },
-    { name = "pre-commit", specifier = ">=4.1.0" },
+    { name = "mypy", specifier = ">=1.15" },
+    { name = "pre-commit", specifier = ">=4.1" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-codecov", specifier = ">=0.6.1" },
-    { name = "pytest-sugar", specifier = ">=1.0.0" },
+    { name = "pytest-sugar", specifier = ">=1" },
 ]
 
 [[package]]
