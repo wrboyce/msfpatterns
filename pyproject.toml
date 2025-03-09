@@ -1,6 +1,6 @@
 [project]
 name = "msfpatterns"
-version = "2.0.15"
+version = "2.0.16"
 description = "Generate/find patterns for use in stack smashing alla pattern_{create,offset}.rb from Metasploit"
 authors = [{ name = "Will Boyce", email = "me@willboyce.com" }]
 license = "BSD-3-Clause"
