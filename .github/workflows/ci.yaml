@@ -50,6 +50,7 @@ jobs:
           commit: false
           extra_requirements: cz-conventional-gitmoji
           github_token: ${{ secrets.GH_PAT }}
+          push: false
       - run: uv lock
       - uses: commitizen-tools/commitizen-action@master
         with:
