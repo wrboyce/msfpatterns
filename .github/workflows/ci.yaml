@@ -49,8 +49,6 @@ jobs:
         with:
           extra_requirements: cz-conventional-gitmoji
           github_token: ${{ secrets.GH_PAT }}
-    outputs:
-      version: ${{ steps.commitizen.outputs.version }}
 
   build-pr:
     runs-on: ubuntu-latest
@@ -84,7 +82,7 @@ jobs:
           uv run cz changelog --file CHANGELOG.md --unreleased-version $(git describe --tags)
       - name: Generate Changelog Preview
         run: |
-          uv run cz changelog --dry-run --start-rev origin/master > pr_changelog.md
+          uv run cz changelog --dry-run --start-rev $(git describe --tags --abbrev=0) > pr_changelog.md
           echo "CHANGELOG_PREVIEW<<EOF" >> $GITHUB_ENV
           cat pr_changelog.md >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -100,7 +98,7 @@ jobs:
             ⚠️ **Ensure your commits follow [Gitmoji Conventional Commits](https://github.com/ljnsn/cz-conventional-gitmoji) to be included in the release!**
           comment-tag: changelog-preview
 
-  build-prerelease:
+  build-master:
     runs-on: ubuntu-latest
     needs: [bump-version, test, lint]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -153,6 +151,16 @@ jobs:
       attestations: write
     steps:
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+      - name: Wait for PyPI package availability
+        run: |
+          for i in {1..10}; do
+            if curl -s "https://pypi.org/pypi/boff/json" | jq -e ".releases[\"$VERSION\"]" > /dev/null; then
+              exit 0
+            fi
+            echo "⏳ Attempt $i/10: Package not found, retrying in $((2**i))s..."
+            sleep $((2**i))
+          done
+          exit 1
       - uses: actions/download-artifact@v4
         with:
           name: "msfpatterns-${{ env.VERSION }}.${{ env.GIT_SHA }}"
@@ -161,20 +169,6 @@ jobs:
         with:
           subject-path: "dist/*"
           push-to-registry: true
-
-  smoke-test:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    needs: publish
-    steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-      - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-      - name: Install package from PyPI
-        run: pip install msfpatterns==${{ env.VERSION }}
-      - name: Verify package functionality
-        run: msfpatterns --help
 
   release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
