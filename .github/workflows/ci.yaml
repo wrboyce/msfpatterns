@@ -45,6 +45,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
       - uses: astral-sh/setup-uv@v5
+      - run: touch .git/COMMIT_EDITMSG
       - uses: commitizen-tools/commitizen-action@master
         with:
           extra_requirements: cz-conventional-gitmoji
