@@ -137,7 +137,7 @@ jobs:
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - uses: actions/download-artifact@v4
         with:
-          name: "msfpatterns-${{ env.VERSION }}"
+          name: "msfpatterns-${{ env.VERSION }}.${{ env.GIT_SHA }}"
           path: dist
       - name: Publish to PyPI
         run: uv publish
@@ -155,7 +155,7 @@ jobs:
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - uses: actions/download-artifact@v4
         with:
-          name: "msfpatterns-${{ env.VERSION }}"
+          name: "msfpatterns-${{ env.VERSION }}.${{ env.GIT_SHA }}"
           path: dist
       - uses: actions/attest-build-provenance@v1
         with:
@@ -184,7 +184,7 @@ jobs:
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - uses: actions/download-artifact@v4
         with:
-          name: "msfpatterns-${{ env.VERSION }}"
+          name: "msfpatterns-${{ env.VERSION }}.${{ env.GIT_SHA }}"
           path: dist
       - run: uv pip install commitizen
       - name: Generate Release Notes
