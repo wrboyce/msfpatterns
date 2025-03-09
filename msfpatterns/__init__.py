@@ -5,16 +5,17 @@ import struct
 
 def generate_pattern(length: int) -> str:
     """Generate a unique cyclic pattern (like Metasploit's pattern_create)"""
-    charset = string.ascii_uppercase + string.ascii_lowercase + string.digits
     pattern = "".join(
         "".join(x)
-        for x in itertools.product(charset[:26], charset[26:52], charset[52:])
+        for x in itertools.product(
+            string.ascii_uppercase, string.ascii_lowercase, string.digits
+        )
     )
     return (pattern * ((length // len(pattern)) + 1))[:length]
 
 
 def find_offset(value: str, length: int) -> list[int] | None:
-    """Find the offset of a 4-byte value inside a cyclic pattern."""
+    """Find the offset of a value inside a cyclic pattern."""
     pattern = generate_pattern(length)
     pattern_bytes = pattern.encode()
 

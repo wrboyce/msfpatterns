@@ -2,7 +2,7 @@
 
 [![📦️ PyPI](https://img.shields.io/pypi/v/msfpatterns)](https://pypi.org/project/msfpatterns/) [![👷 Continuous Integration](https://github.com/wrboyce/msfpatterns/actions/workflows/ci.yaml/badge.svg)](https://github.com/wrboyce/msfpatterns/actions/workflows/ci.yaml) [![🧪 Coverage](https://codecov.io/gh/wrboyce/msfpatterns/graph/badge.svg?token=QG683U5IKA)](https://codecov.io/gh/wrboyce/msfpatterns)
 
-msfpatterns is a tool for generating and analyzing cyclic patterns, similar to pattern_create and pattern_offset from Metasploit. It helps exploit developers identify exact buffer overflow offsets across multiple architectures, including 16-bit, 32-bit, and 64-bit platforms.
+`msfpatterns` (Buffer Overflow Finder) is a tool for generating and analyzing cyclic patterns, similar to pattern_create and pattern_offset from Metasploit. It helps exploit developers identify exact buffer overflow offsets across multiple architectures, including 16-bit, 32-bit, and 64-bit platforms.
 
 ## Features
 
