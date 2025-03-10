@@ -145,7 +145,7 @@ jobs:
         with:
           name: "msfpatterns-${{ env.VERSION }}"
           path: dist
-      - uses: actions/attest-build-provenance@v1
+      - uses: actions/attest-build-provenance@v2
         with:
           subject-path: dist/
           push-to-registry: true
