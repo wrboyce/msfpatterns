@@ -62,6 +62,8 @@ jobs:
         with:
           enable-cache: true
       # create COMMIT_EDITMSG file so the following action does not create it under root ownership
+      - run: uv sync --group=ci --group=dev
+      - run: uv run cz --no-raise 21 bump --yes --changelog
       - run: touch .git/COMMIT_EDITMSG
       - uses: commitizen-tools/commitizen-action@master
         id: commitizen
@@ -69,12 +71,14 @@ jobs:
           extra_requirements: cz-conventional-gitmoji
           github_token: ${{ secrets.GH_PAT }}
           push: false
-      # update `uv` lockfile and amend the commit created by commitizen
-      - run: uv lock
-      - run: git commit --amend --no-edit uv.lock
-      # move the commitizen tag to the amended commit and push it (triggering a new run)
-      - run: git for-each-ref refs/tags/v${{ steps.commitizen.outputs.version }} --format="%(contents)" | git tag -f -a v${{ steps.commitizen.outputs.version }} -F -
-      - run: git push --follow-tags
+      - if: env.PREVIOUS_REVISION != steps.commitizen.outputs.version
+        run: >-
+          # update `uv` lockfile and amend the commit created by commitizen
+          uv lock
+          git commit --amend --no-edit uv.lock
+          # move the commitizen tag to the amended commit and push it (triggering a new run)
+          git for-each-ref refs/tags/v${{ steps.commitizen.outputs.version }} --format="%(contents)" | git tag -f -a v${{ steps.commitizen.outputs.version }} -F -
+          git push --follow-tags
 
   build:
     name: 📦️ Build
