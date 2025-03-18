@@ -1,3 +1,13 @@
+## v6.0.0 (2025-03-18)
+
+### ✨ Features
+
+- test
+
+### 💚👷 CI & Build
+
+- remove `ruff` ci job
+
 ## v5.0.0 (2025-03-18)
 
 ### 🎨🏗️ Style & Architecture
