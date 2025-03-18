@@ -62,8 +62,6 @@ jobs:
         with:
           enable-cache: true
       # create COMMIT_EDITMSG file so the following action does not create it under root ownership
-      - run: uv sync --group=ci --group=dev
-      - run: uv run cz --no-raise 21 bump --yes --changelog
       - run: touch .git/COMMIT_EDITMSG
       - uses: commitizen-tools/commitizen-action@master
         id: commitizen
