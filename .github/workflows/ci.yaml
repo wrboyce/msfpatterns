@@ -19,6 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - uses: pre-commit/action@v3.0.1
 
   test:
@@ -30,6 +32,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - run: uv run pytest --cov --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
       - uses: mikepenz/action-junit-report@v5
         if: success() || failure() # always run even if the previous step fails
@@ -55,6 +59,8 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
       - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       # create COMMIT_EDITMSG file so the following action does not create it under root ownership
       - run: touch .git/COMMIT_EDITMSG
       - uses: commitizen-tools/commitizen-action@master
@@ -68,8 +74,6 @@ jobs:
       - run: git commit --amend --no-edit uv.lock
       # move the commitizen tag to the amended commit and push it (triggering a new run)
       - run: git for-each-ref refs/tags/v${{ steps.commitizen.outputs.version }} --format="%(contents)" | git tag -f -a v${{ steps.commitizen.outputs.version }} -F -
-      - run: git fetch --all --tags
-      - run: git log -10
       - run: git push --follow-tags
 
   build:
@@ -80,6 +84,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - run: uv build
       - run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         if: github.event_name == 'pull_request'
@@ -104,6 +110,8 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
       - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - run: uv venv
       - run: uv pip install commitizen cz-conventional-gitmoji
       - name: Generate Changelog Preview
@@ -132,6 +140,8 @@ jobs:
     environment: publish
     steps:
       - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
       - uses: actions/download-artifact@v4
         with:
@@ -158,6 +168,8 @@ jobs:
           name: "msfpatterns-${{ env.VERSION }}"
           path: dist
       - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - run: uv venv
       - run: uv pip install commitizen cz-conventional-gitmoji
       - name: Generate Release Notes
