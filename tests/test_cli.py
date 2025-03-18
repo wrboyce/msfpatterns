@@ -1,23 +1,27 @@
-from pytest import CaptureFixture, MonkeyPatch
+import pytest
+
 from msfpatterns.cli import main
 
 
 def test_cli_generate_pattern(
-    capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test the CLI pattern generation command"""
-    monkeypatch.setattr("sys.argv", ["msfpatterns", "16"])
+    """Test the CLI pattern generation command."""
+    length = 16
+    monkeypatch.setattr("sys.argv", ["msfpatterns", str(length)])
 
     main()
 
     captured = capsys.readouterr()
-    assert len(captured.out.strip()) == 16  # Ensure output is correct length
+    assert len(captured.out.strip()) == length
 
 
 def test_cli_find_offset_valid(
-    capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test finding an offset from a known pattern"""
+    """Test finding an offset from a known pattern."""
     monkeypatch.setattr("sys.argv", ["msfpatterns", "256", "-q", "Ab0A"])
 
     main()
@@ -27,9 +31,10 @@ def test_cli_find_offset_valid(
 
 
 def test_cli_find_offset_not_found(
-    capsys: CaptureFixture[str], monkeypatch: MonkeyPatch
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test searching for a non-existent pattern"""
+    """Test searching for a non-existent pattern."""
     monkeypatch.setattr("sys.argv", ["msfpatterns", "256", "-q", "XXXX"])
 
     main()

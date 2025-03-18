@@ -4,20 +4,20 @@ from msfpatterns import find_offset, generate_pattern
 
 
 def test_generate_pattern_length() -> None:
-    """Ensure generated pattern has correct length"""
+    """Ensure generated pattern has correct length."""
     length = 64
     pattern = generate_pattern(length)
     assert len(pattern) == length
 
 
 def test_generate_pattern_content() -> None:
-    """Ensure the pattern is generated as expected"""
+    """Ensure the pattern is generated as expected."""
     pattern = generate_pattern(64)
     assert pattern == "Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0A"
 
 
 @pytest.mark.parametrize(
-    "query, expected_offsets",
+    ("query", "expected_offsets"),
     [
         (
             "0x6241",
@@ -39,7 +39,7 @@ def test_find_offset(query: str, expected_offsets: list[int]) -> None:
 
 
 @pytest.mark.parametrize(
-    "query, expected_message",
+    ("query", "expected_message"),
     [
         (
             "A",

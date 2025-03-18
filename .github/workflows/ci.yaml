@@ -20,6 +20,13 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - uses: pre-commit/action@v3.0.1
 
+  ruff:
+    if: "!(github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '🔖 bump:'))"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+
   test:
     if: "!(github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '🔖 bump:'))"
     runs-on: ubuntu-latest
@@ -27,6 +34,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - run: uv run pytest --cov --cov-branch --cov-report=xml --junitxml=junit.xml -o junit_family=legacy
+      - uses: mikepenz/action-junit-report@v5
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: junit.xml
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -38,13 +49,14 @@ jobs:
   bump-version:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    needs: [test, lint]
+    needs: [lint, ruff, test]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
       - uses: astral-sh/setup-uv@v5
+      # create COMMIT_EDITMSG file so the following action does not create it under root ownership
       - run: touch .git/COMMIT_EDITMSG
       - uses: commitizen-tools/commitizen-action@master
         id: commitizen
@@ -52,21 +64,25 @@ jobs:
           extra_requirements: cz-conventional-gitmoji
           github_token: ${{ secrets.GH_PAT }}
           push: false
+      # update `uv` lockfile and amend the commit created by commitizen
       - run: uv lock
       - run: git commit --amend --no-edit uv.lock
-      - run: git for-each-ref refs/tags/v${{ steps.commitizen.outputs.version }} --format="%(contents)" > tag_message.txt
-      - run: git tag -f -a v${{ steps.commitizen.outputs.version }} -F tag_message.txt
+      # move the commitizen tag to the amended commit and push it (triggering a new run)
+      - run: git for-each-ref refs/tags/v${{ steps.commitizen.outputs.version }} --format="%(contents)" | git tag -f -a v${{ steps.commitizen.outputs.version }} -F -
       - run: git push --follow-tags
 
   build:
     runs-on: ubuntu-latest
-    needs: [test, lint]
+    needs: [lint, ruff, test]
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - run: uv build
+      - run: echo "VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        if: github.event_name == 'pull_request'
       - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       - uses: actions/upload-artifact@v4
         with:
           name: "msfpatterns-${{ env.VERSION }}"
@@ -121,34 +137,6 @@ jobs:
         run: uv publish
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-
-  attest:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    needs: publish
-    permissions:
-      attestations: write
-      id-token: write
-    steps:
-      - run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-      - name: Wait for PyPI package availability
-        run: |
-          for i in {1..10}; do
-            if curl -s "https://pypi.org/pypi/msfpatterns/json" | jq -e ".releases[\"$VERSION\"]" > /dev/null; then
-              exit 0
-            fi
-            echo "⏳ Attempt $i/10: Package not found, retrying in $((2**i))s..."
-            sleep $((2**i))
-          done
-          exit 1
-      - uses: actions/download-artifact@v4
-        with:
-          name: "msfpatterns-${{ env.VERSION }}"
-          path: dist
-      - uses: actions/attest-build-provenance@v1
-        with:
-          subject-path: dist/
-          push-to-registry: true
 
   release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')

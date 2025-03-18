@@ -37,6 +37,16 @@ dev = [
 
 ci = [ "commitizen>=4.4.1", "cz-conventional-gitmoji>=0.6.1" ]
 
+[tool.ruff]
+line-length = 120
+
+format.docstring-code-format = true
+lint.select = [ "ALL" ]
+lint.ignore = [ "D" ]
+lint.extend-per-file-ignores."msfpatterns/cli.py" = [ "T201" ]
+lint.extend-per-file-ignores."tests/*" = [ "INP001", "S101" ]
+lint.fixable = [ "ALL" ]
+
 [tool.pyright]
 typeCheckingMode = "strict"
 reportMissingTypeStubs = true

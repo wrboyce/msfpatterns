@@ -1,15 +1,18 @@
 import argparse
+import sys
 
-from . import generate_pattern, find_offset
+from . import find_offset, generate_pattern
 
 
 def main() -> None:
     """CLI interface for pattern generation and offset searching."""
     parser = argparse.ArgumentParser(
-        description="Cyclic pattern generator & offset finder (Metasploit style)"
+        description="Cyclic pattern generator & offset finder (Metasploit style)",
     )
     parser.add_argument(
-        "length", type=int, help="Length of the pattern to generate/search"
+        "length",
+        type=int,
+        help="Length of the pattern to generate/search",
     )
     parser.add_argument(
         "-q",
@@ -28,13 +31,13 @@ def main() -> None:
                 print("[x] Value not found in the pattern.")
             elif match_count > 1:
                 print(
-                    f"[*] Found {match_count} occurrences at offsets: {', '.join(map(str, offsets))}"
+                    f"[*] Found {match_count} occurrences at offsets: {', '.join(map(str, offsets))}",
                 )
             else:
                 print(f"[*] Found 1 occurrence at offset: {offsets[0]}")
         except ValueError as e:
             print(f"[x] {e}")
-            exit(1)
+            sys.exit(1)
     else:
         print(generate_pattern(args.length))
 
