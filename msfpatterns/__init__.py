@@ -1,23 +1,25 @@
 import itertools
+import re
 import string
 import struct
 
 
 def generate_pattern(length: int) -> str:
-    """Generate a unique cyclic pattern (like Metasploit's pattern_create)"""
-    pattern = "".join(
-        "".join(x)
-        for x in itertools.product(
-            string.ascii_uppercase, string.ascii_lowercase, string.digits
+    """Generate a cyclic pattern."""
+    return "".join(
+        "".join(triplet)
+        for triplet in itertools.islice(
+            itertools.product(
+                string.ascii_uppercase, string.ascii_lowercase, string.digits
+            ),
+            length // 3 + 1,
         )
-    )
-    return (pattern * ((length // len(pattern)) + 1))[:length]
+    )[:length]
 
 
-def find_offset(value: str, length: int) -> list[int] | None:
+def find_offset(value: str, length: int) -> list[int]:
     """Find the offset of a value inside a cyclic pattern."""
     pattern = generate_pattern(length)
-    pattern_bytes = pattern.encode()
 
     if value.startswith("0x"):
         hex_length = len(value) - 2
@@ -29,7 +31,7 @@ def find_offset(value: str, length: int) -> list[int] | None:
         try:
             value_bytes = struct.pack(hex_packing_map[hex_length], int(value, 16))
         except ValueError:
-            raise ValueError("Invalid hexadecimal input format.")
+            raise ValueError(f"Invalid hexadecimal input: {value}.")
     elif len(value) in (2, 4, 8):
         value_bytes = value.encode()
     else:
@@ -37,13 +39,4 @@ def find_offset(value: str, length: int) -> list[int] | None:
             "Input must be a 2-character, 4-character, or 8-character string or hexadecimal equivalent."
         )
 
-    offsets = []
-    start = 0
-    while start < len(pattern_bytes):
-        found_at = pattern_bytes.find(value_bytes, start)
-        if found_at == -1:
-            break
-        offsets.append(found_at)
-        start = found_at + 1
-
-    return offsets if offsets else None
+    return [m.start() for m in re.finditer(re.escape(value_bytes.decode()), pattern)]

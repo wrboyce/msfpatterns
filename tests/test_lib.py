@@ -16,7 +16,7 @@ def test_generate_pattern_content() -> None:
     assert pattern == "Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0A"
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "query, expected_offsets",
     [
         (
@@ -31,14 +31,14 @@ def test_generate_pattern_content() -> None:
         ),
         ("Ab0A", [30]),
         ("Ab0Ab1Ab", [30]),
-        ("XXXX", None),
+        ("XXXX", []),
     ],
 )
-def test_find_offset(query: str, expected_offsets: list[int] | None) -> None:
+def test_find_offset(query: str, expected_offsets: list[int]) -> None:
     assert find_offset(query, 256) == expected_offsets
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "query, expected_message",
     [
         (
@@ -57,7 +57,7 @@ def test_find_offset(query: str, expected_offsets: list[int] | None) -> None:
             "0x4142A",
             r"Hex value must be exactly 4, 8, or 16 hex digits \(2, 4, or 8 bytes\).",
         ),
-        ("0xGGGG", "Invalid hexadecimal input format."),
+        ("0xGGGG", "Invalid hexadecimal input: 0xGGGG."),
     ],
 )
 def test_find_offset_invalid_input(query: str, expected_message: str) -> None:

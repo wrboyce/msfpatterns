@@ -28,16 +28,23 @@ scripts.msfpatterns = "msfpatterns.cli:main"
 
 [dependency-groups]
 dev = [
-  "mypy>=1.15",
   "pre-commit>=4.1",
+  "pyright>=1.1.396",
   "pytest>=8.3.4",
   "pytest-codecov>=0.6.1",
   "pytest-sugar>=1",
 ]
 
-[tool.mypy]
-python_version = "3.10"
-strict = true
+ci = [ "commitizen>=4.4.1", "cz-conventional-gitmoji>=0.6.1" ]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+reportMissingTypeStubs = true
+reportUnknownVariableType = true
+reportUnknownMemberType = true
+reportUnknownParameterType = true
+reportUnknownArgumentType = true
+reportUnnecessaryTypeIgnoreComment = true
 
 [tool.commitizen]
 name = "cz_gitmoji"

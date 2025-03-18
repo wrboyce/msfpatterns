@@ -27,15 +27,22 @@ repos:
       - id: check-docstring-first
       - id: debug-statements
 
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.396
+    hooks:
+      - id: pyright
+        args: [--verbose]
+        additional_dependencies:
+          - pytest>=8.3.4
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.10
+    rev: v0.11.0
     hooks:
       - id: ruff
-        args: [--fix]
-      - id: ruff-format
+        args: [--fix, --unsafe-fixes]
 
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.6.5
+    rev: 0.6.6
     hooks:
       - id: uv-lock
 
@@ -43,11 +50,6 @@ repos:
     rev: "v2.5.1"
     hooks:
       - id: pyproject-fmt
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
-    hooks:
-      - id: mypy
 
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.4.1

@@ -23,16 +23,15 @@ def main() -> None:
     if args.query:
         try:
             offsets = find_offset(args.query, args.length)
-            if offsets is not None:
-                match_count = len(offsets)
-                if match_count > 1:
-                    print(
-                        f"[*] Found {match_count} occurrences at offsets: {', '.join(map(str, offsets))}"
-                    )
-                else:
-                    print(f"[*] Found 1 occurrence at offset: {offsets[0]}")
-            else:
+            match_count = len(offsets)
+            if match_count == 0:
                 print("[x] Value not found in the pattern.")
+            elif match_count > 1:
+                print(
+                    f"[*] Found {match_count} occurrences at offsets: {', '.join(map(str, offsets))}"
+                )
+            else:
+                print(f"[*] Found 1 occurrence at offset: {offsets[0]}")
         except ValueError as e:
             print(f"[x] {e}")
             exit(1)
