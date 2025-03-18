@@ -30,6 +30,8 @@ jobs:
   test:
     if: "!(github.event_name == 'push' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, '🔖 bump:'))"
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -69,6 +71,7 @@ jobs:
       - run: git commit --amend --no-edit uv.lock
       # move the commitizen tag to the amended commit and push it (triggering a new run)
       - run: git for-each-ref refs/tags/v${{ steps.commitizen.outputs.version }} --format="%(contents)" | git tag -f -a v${{ steps.commitizen.outputs.version }} -F -
+      - run: git log -10
       - run: git push --follow-tags
 
   build:
