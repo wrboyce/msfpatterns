@@ -119,7 +119,7 @@ jobs:
         with:
           enable-cache: true
       - run: uv venv
-      - run: uv pip install commitizen cz-conventional-gitmoji
+      - run: uv sync --group=ci
       - name: Generate Changelog Preview
         run: |
           uv run cz changelog --dry-run --start-rev $(git describe --tags --abbrev=0) > pr_changelog.md
@@ -181,7 +181,7 @@ jobs:
         with:
           enable-cache: true
       - run: uv venv
-      - run: uv pip install commitizen cz-conventional-gitmoji
+      - run: uv sync --group=ci
       - name: Generate Release Notes
         run: uv run cz changelog --dry-run --start-rev $(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=2 | tail -n1)) > release_changelog.md
       - name: Create GitHub Release
