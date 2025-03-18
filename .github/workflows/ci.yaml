@@ -70,7 +70,8 @@ jobs:
           github_token: ${{ secrets.GH_PAT }}
           push: false
       - if: env.PREVIOUS_REVISION != steps.commitizen.outputs.version
-        run: >-
+        name: update uv.lock and move commitizen tag
+        run: |
           # update `uv` lockfile and amend the commit created by commitizen
           uv lock
           git commit --amend --no-edit uv.lock
