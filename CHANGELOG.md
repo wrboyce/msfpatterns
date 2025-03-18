@@ -1,3 +1,18 @@
+## v5.0.0 (2025-03-18)
+
+### 🎨🏗️ Style & Architecture
+
+- ruff ruff!
+
+### 💚👷 CI & Build
+
+- more ci bullshit
+- CI bullshit
+
+### 🔐🚧📈✏️💩👽️🍻💬🥚🌱🚩🥅🩺 Others
+
+- WIP
+
 ## v4.1.0 (2025-03-18)
 
 ### ✨ Features
