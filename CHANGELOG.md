@@ -1,3 +1,18 @@
+## v7.1.0 (2025-03-18)
+
+### ✨ Features
+
+- test bumping
+
+### 🐛🚑️ Fixes
+
+- fixes
+
+### 💚👷 CI & Build
+
+- whoops
+- ci fixes
+
 ## v7.0.0 (2025-03-18)
 
 ### 🐛🚑️ Fixes
