@@ -1,3 +1,13 @@
+## v8.0.0 (2025-03-18)
+
+### ✨ Features
+
+- test0r
+
+### 💚👷 CI & Build
+
+- ci improvements
+
 ## v7.1.0 (2025-03-18)
 
 ### ✨ Features
