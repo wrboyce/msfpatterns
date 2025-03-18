@@ -4,7 +4,7 @@ requires = [ "hatchling" ]
 
 [project]
 name = "msfpatterns"
-version = "4.0.1"
+version = "4.1.0"
 description = "Generate/find patterns for use in stack smashing alla pattern_{create,offset}.rb from Metasploit"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = "BSD-3-Clause"

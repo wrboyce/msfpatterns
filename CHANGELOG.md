@@ -1,3 +1,13 @@
+## v4.1.0 (2025-03-18)
+
+### ✨ Features
+
+- updates, fixes, hacks, etc
+
+### 🐛🚑️ Fixes
+
+- more fixes.
+
 ## v4.0.1 (2025-03-09)
 
 ### 🐛🚑️ Fixes
