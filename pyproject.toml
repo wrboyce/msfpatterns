@@ -6,7 +6,7 @@ requires = [ "hatchling" ]
 name = "msfpatterns"
 version = "9.0.0"
 description = "Generate/find patterns for use in stack smashing alla pattern_{create,offset}.rb from Metasploit"
-readme = { file = "README.md", content-type = "text/markdown" }
+readme = "README.md"
 license = "BSD-3-Clause"
 authors = [ { name = "Will Boyce", email = "me@willboyce.com" } ]
 requires-python = ">=3.10"
@@ -55,6 +55,9 @@ reportUnknownMemberType = true
 reportUnknownParameterType = true
 reportUnknownArgumentType = true
 reportUnnecessaryTypeIgnoreComment = true
+
+[tool.uv]
+compile-bytecode = true
 
 [tool.commitizen]
 name = "cz_gitmoji"
